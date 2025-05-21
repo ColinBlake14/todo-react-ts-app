@@ -1,26 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Container, Paper, Typography } from '@mui/material';
+import Header from './components/Header';
+import TodoList from './components/ToloList';
+import Footer from './components/Footer';
+import { useTodos } from './hooks/useTodos';
+import { useState } from 'react';
 
-function App() {
+export default function App() {
+  const { todos, addTodo, toggleTodo, clearCompleted } = useTodos();
+  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
+
+  const filtered = todos.filter(todo =>
+    filter === 'active'
+      ? !todo.completed
+      : filter === 'completed'
+        ? todo.completed
+        : true
+  );
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Typography variant="h2" align="center" sx={{ color: '#c6c2c2', mb: 2 }}>
+        todos
+      </Typography>
+      <Paper elevation={3} sx={{ p: 2 }}>
+        <Header onAdd={addTodo} />
+        <TodoList todos={filtered} onToggle={toggleTodo} />
+        <Footer
+          count={todos.filter(t => !t.completed).length}
+          filter={filter}
+          setFilter={setFilter}
+          onClearCompleted={clearCompleted}
+        />
+      </Paper>
+    </Container>
   );
 }
-
-export default App;
